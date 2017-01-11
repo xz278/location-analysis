@@ -896,7 +896,8 @@ def get_home_location(loc_data, sr_col='stay_region'):
 def insert_home_location(data,
                          nodes,
                          sr_col='stay_region',
-                         home=None):
+                         home=None,
+                         inplace=False):
     """
     Insert home location to the start of the
     day if the first time slot of that day
@@ -926,13 +927,20 @@ def insert_home_location(data,
         Default is None. In this case, home locatoin is approximated using
         user location data.
 
+    inplace: bool
+        Wether to insert home location inplace or create a new
+        list of nodes.
+        Defaults to False.
+
     Returns:
     --------
     filtered_nodes: tuple
         Filtered nodes.
     """
-    locs = data.copy()
-    filtered_nodes = deepcopy(nodes)
+    if inplace:
+        filtered_nodes = nodes
+    else:
+        filtered_nodes = deepcopy(nodes)
 
     # find the home location
     if home is None:
@@ -944,7 +952,8 @@ def insert_home_location(data,
         if pd.isnull(node[1].ix[0, 'node']):
             node[1].ix[0, 'node'] = home
 
-    return filtered_nodes
+    if not inplace:
+        return filtered_nodes
 
 
 def filter_days_without_round_trip(nodes,
